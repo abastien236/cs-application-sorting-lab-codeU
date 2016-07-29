@@ -64,9 +64,42 @@ public class ListSorter<T> {
 	 */
 	public List<T> mergeSort(List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
-        return null;
+		int size = list.size();
+		if (size <= 1) {
+			return list;
+		}
+		List<T> list1 = mergeSort(new LinkedList<T>(list.subList(0, size/2)), comparator);
+		List<T> list2 = mergeSort(new LinkedList<T>(list.subList(size/2, size)), comparator);
+
+		return merge(list1, list2, comparator);
 	}
 
+	private List<T> merge(List<T> list1, List<T> list2, Comparator<T> comparator) {
+		List<T> result = new LinkedList<T>();
+		int total = list1.size() + list2.size();
+		for (int i=0; i<total; i++) {
+			List<T> point = smallest(list1, list2, comparator);
+			result.add(point.remove(0));
+		}
+		return result;
+	}
+
+	private List<T> smallest(List<T> first, List<T> second, Comparator<T> comparator) {
+		if (first.size() == 0) {
+			return second;
+		}
+		if (second.size() == 0) {
+			return first;
+		}
+		int res = comparator.compare(first.get(0), second.get(0));
+		if (res < 0) {
+			return first;
+		}
+		if (res > 0) {
+			return second;
+		}
+		return first;
+	}
 	/**
 	 * Sorts a list using a Comparator object.
 	 * 
@@ -76,6 +109,12 @@ public class ListSorter<T> {
 	 */
 	public void heapSort(List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
+		PriorityQueue<T> theHeap = new PriorityQueue<T>(list.size(), comparator);
+		theHeap.addAll(list);
+		list.clear();
+		while (!theHeap.isEmpty()) {
+			list.add(theHeap.poll());
+		}
 	}
 
 	
@@ -90,7 +129,23 @@ public class ListSorter<T> {
 	 */
 	public List<T> topK(int k, List<T> list, Comparator<T> comparator) {
         // FILL THIS IN!
-        return null;
+		PriorityQueue<T> theHeap = new PriorityQueue<T>(list.size(), comparator);
+		for (T elt: list) {
+			if (theHeap.size() < k) {
+				theHeap.offer(elt);
+				continue;
+			}
+			int comp = comparator.compare(elt, theHeap.peek());
+			if (comp > 0) {
+				theHeap.poll();
+				theHeap.offer(elt);
+			}
+		}
+		List<T> result = new ArrayList<T>();
+		while (!theHeap.isEmpty()) {
+			result.add(theHeap.poll());
+		}
+		return result;
 	}
 
 	
